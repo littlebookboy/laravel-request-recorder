@@ -18,6 +18,8 @@ class RequestRecorderServiceProvider extends ServiceProvider
         // 發佈
         $this->publisher();
 
+        $this->loadMigrationsFrom(__DIR__ . '/Migrations');
+
         // 註冊 api 中介層
         if (config('request-recorder.recorder.enabled')) {
             $router->prependMiddlewareToGroup(
