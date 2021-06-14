@@ -149,13 +149,23 @@ class RequestRecorderMiddleware
         if (array_key_exists($routeName, $skipRoutes->toArray())) {
             $dataSet = $skipRoutes->get($routeName)->first();
 
-            // 當 config 中對應該路由的 http code 的設定為空或萬用，所有對應該請求的路由都記錄起來
-            if (empty(array_get($dataSet, 'http_code')) || in_array('*', array_get($dataSet, 'http_code'))) {
+            // 未設置 http_code 時，表示該路由所有 response code 皆不寫紀錄
+            if (!isset($dataSet['http_code']) || empty($dataSet['http_code'])) {
                 return true;
             }
 
-            if (in_array($responseCode, array_get($dataSet, 'http_code'))) {
-                return true;
+            if (is_array($dataSet['http_code'])) {
+                // 設定 * 等同於不設定 http_code => 此路由所有 http code 皆不寫紀錄
+                // 或是有設置 http_code，且非為 *，表示該路由符合指定的 response code 時，不寫紀錄
+                if (in_array('*', $dataSet['http_code']) || in_array($responseCode, $dataSet['http_code'])) {
+                    return true;
+                }
+            }
+
+            if (is_string($dataSet['http_code'])) {
+                if ('*' === $dataSet['http_code'] || $responseCode === $dataSet['http_code']) {
+                    return true;
+                }
             }
         }
 
