@@ -41,7 +41,7 @@ class RequestRecorderMiddleware
         // 檢查 request id 是否已存在
         if ($this->isRequestIdConflict()) {
             // 請求識別 id 若已存在，回應 409 Conflict 表示因為請求存在衝突無法處理該請求
-            return Response()->make('', 409);
+            return response()->make('', 409);
         }
 
         // 檢查是否要記錄此請求：方法 isExceptMethod 為真表示不記錄
